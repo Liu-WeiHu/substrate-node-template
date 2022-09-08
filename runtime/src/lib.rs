@@ -272,6 +272,20 @@ impl pallet_poe::Config for Runtime {
 	type MaxclaimLength = ConstU32<512>;
 }
 
+parameter_types! {
+	pub const MaxKittyOwned: u32 = 9999;
+	pub const ReservationFee: u128 = 100;
+}
+
+impl pallet_kitty::Config for Runtime {
+	type Event = Event;
+	type Currency = Balances;
+	type Randomness = RandomnessCollectiveFlip;
+	type MaxKittyOwned = MaxKittyOwned;
+	type ReservableCurrency = Balances;
+	type ReservationFee = ReservationFee;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -290,6 +304,7 @@ construct_runtime!(
 		// Include the custom logic from the pallet-template in the runtime.
 		TemplateModule: pallet_template,
 		PoeModule: pallet_poe,
+		KittyModule: pallet_kitty,
 	}
 );
 
