@@ -2,6 +2,12 @@
 
 pub use pallet::*;
 
+#[cfg(test)]
+mod mock;
+
+#[cfg(test)]
+mod tests;
+
 #[frame_support::pallet]
 pub mod pallet {
     use frame_support::{transactional, pallet_prelude::{*, ValueQuery, DispatchResultWithPostInfo}, traits::{Currency, Randomness, ExistenceRequirement, ReservableCurrency}, Twox64Concat, BoundedVec, sp_runtime::traits::Hash};
