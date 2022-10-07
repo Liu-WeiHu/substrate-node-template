@@ -1,4 +1,3 @@
-use crate as pallet_poe;
 use frame_support::traits::{ConstU16, ConstU32, ConstU64};
 use frame_system as system;
 use sp_core::H256;
@@ -6,6 +5,8 @@ use sp_runtime::{
 	testing::Header,
 	traits::{BlakeTwo256, IdentityLookup},
 };
+
+use crate as pallet_poe;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -52,6 +53,7 @@ impl system::Config for Test {
 impl pallet_poe::Config for Test {
 	type MaxclaimLength = ConstU32<512>;
 	type Event = Event;
+	type WeightInfo = ();
 }
 
 // Build genesis storage according to the mock runtime.

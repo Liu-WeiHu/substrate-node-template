@@ -4,6 +4,9 @@
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/v3/runtime/frame>
 pub use pallet::*;
+pub use weights::WeightInfo;
+
+pub mod weights;
 
 #[cfg(test)]
 mod mock;
@@ -16,12 +19,14 @@ mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
-	use frame_support::{
-		pallet_prelude::{DispatchResultWithPostInfo, *},
-		Blake2_128Concat, BoundedVec,
+	pub use frame_support::{
+		Blake2_128Concat,
+		BoundedVec, pallet_prelude::{*, DispatchResultWithPostInfo},
 	};
-	use frame_system::pallet_prelude::*;
-	use sp_std::prelude::*;
+	pub use frame_system::pallet_prelude::*;
+	pub use sp_std::prelude::*;
+
+	use super::WeightInfo;
 
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
@@ -29,6 +34,7 @@ pub mod pallet {
 		#[pallet::constant]
 		type MaxclaimLength: Get<u32>;
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+		type WeightInfo: WeightInfo;
 	}
 
 	#[pallet::pallet]
@@ -64,7 +70,7 @@ pub mod pallet {
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
-		#[pallet::weight(0)]
+		#[pallet::weight(T::WeightInfo::create_claim(claim.len() as u32))]
 		pub fn create_claim(origin: OriginFor<T>, claim: Vec<u8>) -> DispatchResultWithPostInfo {
 			let sender = ensure_signed(origin)?;
 
@@ -83,7 +89,7 @@ pub mod pallet {
 			Ok(().into())
 		}
 
-		#[pallet::weight(0)]
+		#[pallet::weight(T::WeightInfo::revoke_claim(claim.len() as u32))]
 		pub fn revoke_claim(origin: OriginFor<T>, claim: Vec<u8>) -> DispatchResultWithPostInfo {
 			let sender = ensure_signed(origin)?;
 
@@ -96,7 +102,7 @@ pub mod pallet {
 			Ok(().into())
 		}
 
-		#[pallet::weight(0)]
+		#[pallet::weight(T::WeightInfo::transfer_claim(claim.len() as u32))]
 		pub fn transfer_claim(
 			origin: OriginFor<T>,
 			claim: Vec<u8>,
